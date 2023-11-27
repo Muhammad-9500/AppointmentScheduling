@@ -24,6 +24,7 @@ namespace AppointmentScheduling.Controllers
         {
             return View();
         }
+       
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -34,6 +35,9 @@ namespace AppointmentScheduling.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe,false);
                 if (result.Succeeded)
                 {
+                    var user = await _userManager.FindByNameAsync(model.Email);
+                    HttpContext.Session.SetString("ssusername", user.Name);
+
                     return RedirectToAction("Index", "Appointment");
                 }
                 ModelState.AddModelError("", "Invalid Login Attempt");
@@ -43,12 +47,6 @@ namespace AppointmentScheduling.Controllers
 
         public async Task<IActionResult> Register()
         {
-            if (!_roleManager.RoleExistsAsync(Helper.Helper.Admin).GetAwaiter().GetResult())
-            {
-                await _roleManager.CreateAsync(new IdentityRole(Helper.Helper.Admin));
-                await _roleManager.CreateAsync(new IdentityRole(Helper.Helper.Doctor));
-                await _roleManager.CreateAsync(new IdentityRole(Helper.Helper.Patient));
-            }
             return View();
         }
 
@@ -70,8 +68,17 @@ namespace AppointmentScheduling.Controllers
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, registerViewModel.RoleName);
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index","Home");
+
+                    if(!User.IsInRole(Helper.Helper.Admin))
+                    {
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                    }
+                    else
+                    {
+                        TempData["newAdminSignUp"] = user.Name;
+                    }
+                    
+                    return RedirectToAction("Index","Appointment");
                 }
                 foreach(var error in result.Errors)
                 {

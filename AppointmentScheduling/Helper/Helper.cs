@@ -4,18 +4,43 @@ namespace AppointmentScheduling.Helper
 {
     public class Helper
     {
-        public static string Admin = "Admin";
-        public static string Patient = "Patient";
-        public static string Doctor = "Doctor";
+        public const string Admin = "Admin";
+        public const string Patient = "Patient";
+        public const string Doctor = "Doctor";
 
-        public static List<SelectListItem> GetRolesForDropDown()
+        public static string appointmentAdded = "Appointment added successfully.";
+        public static string meetingConfirmed = "Meeting Confirmed successfully.";
+        public static string meetingConfirmError = "Meeting Confirmed Error!.";
+        public static string appointmentUpdated = "Appointment updated successfully.";
+        public static string appointmentDeleted = "Appointment deleted successfully.";
+        public static string appointmentExists = "Appointment for selected date and time already exists.";
+        public static string appointmentNotExists = "Appointment does not exists.";
+
+        public static string appointmentAddError = "Something went wrong, Please try again.";
+        public static string appointmentUpdateError = "Something went wrong, Please try again.";
+        public static string somethingWentWrong = "Something went wrong, Please try again.";
+
+        public static int Success_Code = 1;
+        public static int Failure_Code = 0;
+        public static List<SelectListItem> GetRolesForDropDown(bool isAdmin)
         {
-            return new List<SelectListItem>
+
+            if(isAdmin)
             {
-                new SelectListItem{Value= Admin,Text=Admin},
-                new SelectListItem{Value= Doctor,Text=Doctor},
-                new SelectListItem{Value= Patient,Text=Patient}
-            };
+                return new List<SelectListItem>
+                {
+                    new SelectListItem{Value= Admin,Text=Admin}
+                  
+                };
+            }
+            else
+            {
+                return new List<SelectListItem>
+                {
+                    new SelectListItem{Value= Doctor,Text=Doctor},
+                    new SelectListItem{Value= Patient,Text=Patient}
+                };
+            }   
         }
 
         public static List<SelectListItem> GetTimeDropDown()
